@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Title</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        .example-parent {
+    color: black;
+    display: flex;
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+    .example-parent .hed {
+        padding: 10px;
+        color: #fff;
+        text-align: center;
+        background-color: rgb(9, 63, 121);
+        border-radius: 5px;
+        border: 1px solid rgb(9, 63, 121);
+    }
+
+    .example-origin {
+    flex-basis: 100%;
+    flex-grow: 1;
+    padding: 10px;
+}
+
+
+        .example-drop {
+            display: none;
+            position: relative;
+            background-color: #595959 !important;
+            font-weight: normal !important;
+            opacity: 0.25 !important;
+            height: 60px !important;
+            margin: 10px !important;
+            border-radius: .25rem !important;
+        }
+
+        .example-draggable {
+            font-weight: normal;
+            margin-bottom: 20px;
+            margin-top: 20px;
+            padding: 10px;
+            cursor: pointer;
+            -webkit-transition: -webkit-transform 0.2s ease-out;
+            -moz-transition: -moz-transform 0.2s ease-out;
+            -o-transition: -o-transform 0.2s ease-out;
+            -ms-transition: -ms-transform 0.2s ease-out;
+        }
+
+        .example-dropzone {
+            background-color: #dee2e6;
+            flex-basis: 100%;
+            flex-grow: 1;
+            padding: 0 !important;
+            margin: 10px;
+            border-radius: 10px;
+        }
+
+        .over {
+            background-color: red;
+            border: solid black 1px;
+            opacity: 0.25;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Arraste e solte para ordenar:</h2>
+
+        <div class="example-parent">
+
+            <div class="droppable example-dropzone" ondragover="onDragOver(event);" ondrop="onDrop(event);"
+                ondragleave="onDragLeave(event);">
+
+                <div class="draggable example-draggable" id="item-1" draggable="true" ondragstart="onDragStart(event);"
+                    ondragend="onDragEnd(event);">Item 1</div>
+                <div class="draggable example-draggable" id="item-2" draggable="true" ondragstart="onDragStart(event);"
+                    ondragend="onDragEnd(event);">Item 2</div>
+                <div class="draggable example-draggable" id="item-3" draggable="true" ondragstart="onDragStart(event);"
+                    ondragend="onDragEnd(event);">Item 3</div>
+                <div class="draggable example-draggable" id="item-4" draggable="true" ondragstart="onDragStart(event);"
+                    ondragend="onDragEnd(event);">Item 4</div>
+                <div class="draggable example-draggable" id="item-5" draggable="true" ondragstart="onDragStart(event);"
+                    ondragend="onDragEnd(event);">Item 5</div>
+                <div class="example-drop example-draggable"></div>
+                <p>Solte aqui para ordenar:</p>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+    <script>
+        function onDragStart(event) {
+            event.dataTransfer.setData('text/plain', event.target.id);
+            event.currentTarget.classList.add('over');
+        }
+
+        function onDragOver(event) {
+            event.preventDefault();
+
+            const dropzone = event.target;
+            const posicao = parseInt($(dropzone).attr('data-ordenacao'));
+            if ($(dropzone).hasClass('example-dropzone')) {
+                OrdenarIndex(dropzone);
+            } else if ($(dropzone).hasClass('example-draggable')) {
+                var parent = $(dropzone).parent().get(0);
+                $(parent).find('.example-drop').show();
+                //$(parent).find('.over').hide();
+                $('.example-drop').attr('data-ordenacao', (posicao + 1));
+                OrdenarDrags(parent);
+                OrdenarIndex(parent);
+            }
+        }
+
+        function onDragLeave(event) {
+            event.preventDefault();
+        }
+
+        function onDragEnd(event) {
+            $('.example-draggable').removeClass('over');
+            $('.example-drop').hide();
+        }
+
+        function onDrop(event) {
+            const id = event.dataTransfer.getData('text');
+            const draggableElement = document.getElementById(id);
+            const dropzone = event.target;
+            const posicao = parseInt($(dropzone).attr('data-ordenacao'));
+
+            if ($(dropzone).hasClass('example-dropzone')) {
+                dropzone.appendChild(draggableElement);
+                $(dropzone).find('.over').show();
+                OrdenarIndex(dropzone);
+            } else if ($(dropzone).hasClass('example-draggable')) {
+                var parent = $(dropzone).parent().get(0);
+                parent.appendChild(draggableElement);
+                $(parent).find('.over').show();
+                $(draggableElement).attr('data-ordenacao', (posicao + 1));
+                OrdenarDrags(parent);
+                OrdenarIndex(parent);
+            }
+
+
+            $(draggableElement).removeClass('over');
+
+        }
+
+        function OrdenarIndex(dropzone) {
+            var candidatos = $(dropzone);
+            var drags = $(dropzone).find('.example-draggable');
+
+            for (let i = 0; i < drags.length; i++) {
+                $(drags[i]).attr('data-ordenacao', (i + 1));
+            }
+
+            candidatos.append(drags);
+        }
+
+        function OrdenarDrags(parent) {
+            var candidatos = $(parent);
+            var drags = $(parent).find('.example-draggable');
+
+            console.log({
+                candidatos
+            });
+
+            drags.detach().sort(function (x, y) {
+                var candidatoX = parseInt($(x).attr('data-ordenacao'));
+                var candidatoY = parseInt($(y).attr('data-ordenacao'));
+
+                return (candidatoX > candidatoY) ? (candidatoX > candidatoY) ? 1 : 0 : -1;
+            });
+
+            candidatos.append(drags);
+        }
+    </script>
+</body>
+
+</html>
